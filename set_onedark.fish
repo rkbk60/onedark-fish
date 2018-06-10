@@ -1,6 +1,6 @@
 #!/usr/bin/fish
 
-function set_onedark -a scheme -d "apply onedark colorscheme to your terminal"
+function set_onedark -d "apply onedark colorscheme to your terminal"
     function __set_onedark_help
         echo "Name: set_onedark - Apply onedark colorscheme to your terminal."
         echo
