@@ -114,7 +114,7 @@ function set_onedark_color -a name rgb index256
     if test "$index256" = "current"
         set index256 $current_color[2]
     else if test "$index256" = "default"
-        set rgb $default_color[1]
+        set index256 $default_color[2]
     else if string match -qrv '^\d*$' $index256
         echo "set_onedark_color: Cannot use '$index256' at index 3" > /dev/stderr
         return 3
