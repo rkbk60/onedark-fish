@@ -124,5 +124,5 @@ function set_onedark_color -a name rgb index256
     end
 
     # overwrite color values
-    set -g $target "$rgb" "$index256" "$index16" "$colors[3]"
+    set -g $target "$rgb" "$index256" "$default_color[3]"
 end
