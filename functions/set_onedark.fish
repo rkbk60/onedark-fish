@@ -27,23 +27,22 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
         set -e argv[1]
     end
 
-    # color definition: __onedark_xxx = [rgb, 256color, 16color]
-    set -q __onedark_black;     or set -g __onedark_black      282c34  235  0
-    set -q __onedark_red;       or set -g __onedark_red        be5046  196  1
-    set -q __onedark_green;     or set -g __onedark_green      98c379  114  2
-    set -q __onedark_yellow;    or set -g __onedark_yellow     d19a66  173  3
-    set -q __onedark_blue;      or set -g __onedark_blue       61afef  39   4
-    set -q __onedark_magenta;   or set -g __onedark_magenta    c678dd  170  5
-    set -q __onedark_cyan;      or set -g __onedark_cyan       56b6c2  38   6
-    set -q __onedark_white;     or set -g __onedark_white      abb2bf  145  7
-    set -q __onedark_brblack;   or set -g __onedark_brblack    5c6370  59   8
-    set -q __onedark_brred;     or set -g __onedark_brred      e06c75  204  9
-    set -q __onedark_brgreen;   or set -g __onedark_brgreen    98c379  114  10
-    set -q __onedark_bryellow;  or set -g __onedark_bryellow   e5c07b  180  11
-    set -q __onedark_brblue;    or set -g __onedark_brblue     61afef  39   12
-    set -q __onedark_brmagenta; or set -g __onedark_brmagenta  c678dd  170  13
-    set -q __onedark_brcyan;    or set -g __onedark_brcyan     56b6c2  38   14
-    set -q __onedark_brwhite;   or set -g __onedark_brwhite    cfd7e6  253  15
+    set -q __onedark_black;     or set_onedark_color black     default default
+    set -q __onedark_red;       or set_onedark_color red       default default
+    set -q __onedark_green;     or set_onedark_color green     default default
+    set -q __onedark_yellow;    or set_onedark_color yellow    default default
+    set -q __onedark_blue;      or set_onedark_color blue      default default
+    set -q __onedark_magenta;   or set_onedark_color magenta   default default
+    set -q __onedark_cyan;      or set_onedark_color cyan      default default
+    set -q __onedark_white;     or set_onedark_color white     default default
+    set -q __onedark_brblack;   or set_onedark_color brblack   default default
+    set -q __onedark_brred;     or set_onedark_color brred     default default
+    set -q __onedark_brgreen;   or set_onedark_color brgreen   default default
+    set -q __onedark_bryellow;  or set_onedark_color bryellow  default default
+    set -q __onedark_brblue;    or set_onedark_color brblue    default default
+    set -q __onedark_brmagenta; or set_onedark_color brmagenta default default
+    set -q __onedark_brcyan;    or set_onedark_color brcyan    default default
+    set -q __onedark_brwhite;   or set_onedark_color brwhite   default default
 
     function __onedark_code_of
         printf '%s/%s/%s' \
