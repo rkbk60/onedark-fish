@@ -60,7 +60,21 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
         end
     end
 
-    if test -n "$TMUX"
+    if string match -qr 'eterm-*' $TERM
+        function __onedark_input_color -a target hex i256 i16
+            set -g $target (printf '#%s' $hex) (__onedark_input_options $target)
+        end
+        function __onedark_output_color
+            true
+        end
+        function __onedark_output_color_var
+            true
+        end
+        function __onedark_output_color_custom
+            true
+        end
+
+    else if test -n "$TMUX"
         function __onedark_input_color -a target hex i256 i16
             set -g $target (printf '#%s' $hex) (__onedark_input_options $target)
         end
