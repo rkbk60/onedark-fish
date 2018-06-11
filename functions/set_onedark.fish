@@ -173,13 +173,13 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
     __onedark_output_color $__onedark_brwhite
 
     if test -n "$ITERM_SESSION_ID"
-        __onedark_output_color_custom Pg (__onedark_code_of $__onedark_brwhite[1]) # foreground
-        __onedark_output_color_custom Ph (__onedark_code_of $__onedark_black[1])   # background
-        __onedark_output_color_custom Pi (__onedark_code_of $__onedark_brwhite[1]) # bold text
-        __onedark_output_color_custom Pj (__onedark_code_of $__onedark_brcyan[1])  # selection
-        __onedark_output_color_custom Pk (__onedark_code_of $__onedark_black[1])   # selection text
-        __onedark_output_color_custom Pl (__onedark_code_of $__onedark_brcyan[1])  # cursor
-        __onedark_output_color_custom Pm (__onedark_code_of $__onedark_black[1])   # cursor text
+        __onedark_output_color_custom Pg $__onedark_brwhite[1] # foreground
+        __onedark_output_color_custom Ph $__onedark_black[1]   # background
+        __onedark_output_color_custom Pi $__onedark_brwhite[1] # bold text
+        __onedark_output_color_custom Pj $__onedark_brcyan[1]  # selection
+        __onedark_output_color_custom Pk $__onedark_black[1]   # selection text
+        __onedark_output_color_custom Pl $__onedark_brcyan[1]  # cursor
+        __onedark_output_color_custom Pm $__onedark_black[1]   # cursor text
     else if test -z "$VIM"
         __onedark_output_color_var 10 $__onedark_brwhite # foreground
         if test $__onedark_set_background = 'true'
