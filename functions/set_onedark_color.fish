@@ -1,6 +1,6 @@
 #!/usr/bin/fish
 
-function set_onedark_color -a name rgb index256
+function set_onedark_color -a name rgb index256 -d "define color for onedark"
     function __set_onedark_color_help
         echo "Name: set_onedark_color - Define color for onedark"
         echo
@@ -16,18 +16,18 @@ function set_onedark_color -a name rgb index256
         echo "        RGB color code, like 'a3ff00', '0C060F'."
         echo "        It can use full size only, cannot use short style like '88D'."
         echo "        If you don't want to change value, then set 'current',"
-        echo "        or don't want to use preset value, then set 'default'."
+        echo "        or want to use preset value, then set 'default'."
         echo "    INDEX-256"
-        echo "        Index of 256 color(0 ~ 255)."
+        echo "        Index of 256 color, in the range from 16 to 255."
         echo "        If you don't want to change value, then set 'current',"
-        echo "        or don't want to use preset value, then set 'default'."
+        echo "        or want to use preset value, then set 'default'."
         echo
         echo "Examples:"
         echo "    Define custom black color:"
-        echo "           \$ set_onedark_color black 0a0400 234"
+        echo '            $ set_onedark_color black 0a0400 231'
         echo
         echo "    Overwrite only white 256 color index:"
-        echo "           \$ set_onedark_color white current 255"
+        echo '            $ set_onedark_color white current 255'
     end
 
     # check help options
