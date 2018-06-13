@@ -8,11 +8,13 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
         echo "    set_onedark [options]"
         echo
         echo "Options"
+        echo "    -256, --use-256-color   use 256 color"
         echo "    -b, --set-background    set background color"
         echo "    -h, --help              show this help message"
     end
 
-    set -l __onedark_set_background 'false'
+    set -l set_background 'false'
+    set -l use_256 'false'
     while count $argv > /dev/null
         switch $argv[1]
             case -h --help
@@ -20,12 +22,15 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
                 return
             case -b --set-background
                 set __onedark_set_background 'true'
+            case '-256' --use-256-color
+                set use_256 'true'
             case '-*'
                 echo "set_onedark: unknown option '$argv[1]'" > /dev/stderr
                 return 1
         end
         set -e argv[1]
     end
+    set -g __onedark_256_flag "$use_256"
 
     set -q __onedark_black;     or set_onedark_color black     default default
     set -q __onedark_red;       or set_onedark_color red       default default
@@ -44,11 +49,14 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
     set -q __onedark_brcyan;    or set_onedark_color brcyan    default default
     set -q __onedark_brwhite;   or set_onedark_color brwhite   default default
 
-    function __onedark_code_of
+    function __onedark_code_of -V use_256 -a hex i256
+        test "$use_256" = 'true'
+            and set -l color (__onedark_256_to_hex $i256)
+            or  set -l color "$hex"
         printf '%s/%s/%s' \
-            (string join '' (string split '' $argv[1])[1 2]) \
-            (string join '' (string split '' $argv[1])[3 4]) \
-            (string join '' (string split '' $argv[1])[5 6])
+            (string sub -s 1 -l 2 $color) \
+            (string sub -s 3 -l 2 $color) \
+            (string sub -s 5 -l 2 $color)
     end
 
     function __onedark_input_options
@@ -60,29 +68,63 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
         end
     end
 
+    function __onedark_256_to_hex -a i256
+        if test "$i256" -le 16
+            # <16: system color palette, 16: black
+            printf '000000'
+            return
+        else if test $i256 -gt 231
+            # grayscale
+            printf '%x' (math "8 + 10 * ($i256 - 231)")
+            return
+        end
+        # detect color level (0 ~ 5)
+        set i256 (math "$i256 - 16")
+        set -l red (math "$i256 / 36")
+        test $red -gt 5; and set red 5
+        set -l green (math "($i256 - 36 * $red) / 6")
+        test $green -gt 5; and set green 5
+        set -l blue (math "$i256 - 36 * $red - 6 * $green")
+
+        # convert to decimal color code
+        set red   (math "51 * $red")
+        set green (math "51 * $green")
+        set blue  (math "51 * $blue")
+
+        printf "%02x%02x%02x" $red $green $blue
+    end
+
     if test -n "$TMUX"
-        function __onedark_input_color -a target hex i256 i16
-            set -g $target (printf '#%s' $hex) (__onedark_input_options $target)
+        function __onedark_input_color -V use_256 -a target hex i256 i16
+            set -l color
+            test "$use_256" = 'true'
+                and set color (__onedark_256_to_hex $i256)
+                or  set color "$hex"
+            set -g $target (printf '#%s' $color) (__onedark_input_options $target)
         end
-        function __onedark_output_color -a hex i256 i16
-            printf '\033Ptmux;\033\033]4%d;rgb:%s\033\033\\\033%s' $i16 (__onedark_code_of $hex) \\
+        function __onedark_output_color -V use_256 -a hex i256 i16
+            printf '\033Ptmux;\033\033]4%d;rgb:%s\033\033\\\033%s' $i16 (__onedark_code_of $hex $i256) \\
         end
-        function __onedark_output_color_var -a target hex i256 i16
-            printf '\033Ptmux;\033\033]%d;rgb:%s\033\033\\\033%s' $target (__onedark_code_of $hex) \\
+        function __onedark_output_color_var -V use_256 -a target hex i256 i16
+            printf '\033Ptmux;\033\033]%d;rgb:%s\033\033\\\033%s' $target (__onedark_code_of $hex $i256) \\
         end
         function __onedark_output_color_custom -a target value
             printf '\033Ptmux;\033\033]%s%s\033\033\\\033%s' $target $value \\
         end
 
     else if string match -qr 'screen[-.]*' $TERM
-        function __onedark_input_color -a target hex i256 i16
-            set -g $target (printf '#%s' $hex) (__onedark_input_options $target)
+        function __onedark_input_color -V use_256 -a target hex i256 i16
+            set -l color
+            test "$use_256" = 'true'
+                and set color (__onedark_256_to_hex $i256)
+                or  set color "$hex"
+            set -g $target (printf '#%s' $color) (__onedark_input_options $target)
         end
-        function __onedark_output_color -a hex i256 i16
-            printf '033P\033]4;%d;rgb:%s\007\033%s' $color[3] (__onedark_code_of $hex) \\
+        function __onedark_output_color -V use_256 -a hex i256 i16
+            printf '033P\033]4;%d;rgb:%s\007\033%s' $i16 (__onedark_code_of $hex $i256) \\
         end
-        function __onedark_output_color_var -a target hex i256 i16
-            printf '033P\033];%d;rgb:%s\007\033%s' $target (__onedark_code_of $hex) \\
+        function __onedark_output_color_var -V use_256 -a target hex i256 i16
+            printf '033P\033];%d;rgb:%s\007\033%s' $target (__onedark_code_of $hex $i256) \\
         end
         function __onedark_output_color_custom -a target value
             printf '033P\033];%s%s\007\033%s' $target $value \\
@@ -151,14 +193,18 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
         end
 
     else
-        function __onedark_input_color -a target hex i256 i16
-            set -g $target (printf '#%s' $hex) (__onedark_input_options $target)
+        function __onedark_input_color -V use_256 -a target hex i256 i16
+            set -l color
+            test "$use_256" = 'true'
+                and set color (__onedark_256_to_hex $i256)
+                or  set color "$hex"
+            set -g $target (printf '#%s' $color) (__onedark_input_options $target)
         end
-        function __onedark_output_color -a hex i256 i16
-            printf '\033]4;%d;rgb:%s\033%s' $i16 (__onedark_code_of $hex) \\
+        function __onedark_output_color -V use_256 -a hex i256 i16
+            printf '\033]4;%d;rgb:%s\033%s' $i16 (__onedark_code_of $hex $i256) \\
         end
-        function __onedark_output_color_var -a target hex i256 i16
-            printf '\033]%d;rgb:%s\033%s' $target (__onedark_code_of $hex) \\
+        function __onedark_output_color_var -V use_256 -a target hex i256 i16
+            printf '\033]%d;rgb:%s\033%s' $target (__onedark_code_of $hex $i256) \\
         end
         function __onedark_output_color_custom -a target value
             printf '\033]%s%s\033%s' $target $value \\
@@ -204,16 +250,21 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
     __onedark_output_color $__onedark_brwhite
 
     if test -n "$ITERM_SESSION_ID"
-        __onedark_output_color_custom Pg $__onedark_brwhite[1] # foreground
-        __onedark_output_color_custom Ph $__onedark_black[1]   # background
-        __onedark_output_color_custom Pi $__onedark_brwhite[1] # bold text
-        __onedark_output_color_custom Pj $__onedark_brcyan[1]  # selection
-        __onedark_output_color_custom Pk $__onedark_black[1]   # selection text
-        __onedark_output_color_custom Pl $__onedark_brcyan[1]  # cursor
-        __onedark_output_color_custom Pm $__onedark_black[1]   # cursor text
+        function __onedark_iterm_color -V use_256
+            test "$use_256" = 'true'
+                and printf (__onedark_256_to_hex $argv[2])
+                or  printf "$argv[1]"
+        end
+        __onedark_output_color_custom Pg (__onedark_iterm_color $__onedark_brwhite) # foreground
+        __onedark_output_color_custom Ph (__onedark_iterm_color $__onedark_black)   # background
+        __onedark_output_color_custom Pi (__onedark_iterm_color $__onedark_brwhite) # bold text
+        __onedark_output_color_custom Pj (__onedark_iterm_color $__onedark_brcyan)  # selection
+        __onedark_output_color_custom Pk (__onedark_iterm_color $__onedark_black)   # selection text
+        __onedark_output_color_custom Pl (__onedark_iterm_color $__onedark_brcyan)  # cursor
+        __onedark_output_color_custom Pm (__onedark_iterm_color $__onedark_black)   # cursor text
     else if test -z "$VIM"
         __onedark_output_color_var 10 $__onedark_brwhite # foreground
-        if test $__onedark_set_background = 'true'
+        if test "$__onedark_set_background" = 'true'
             __onedark_output_color_var 11 $__onedark_black # background
             string match -qr "rxvt-*" $TERM
                 and __onedark_output_color_var 708 $__onedark_black # internal border
