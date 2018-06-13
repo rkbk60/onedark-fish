@@ -118,7 +118,7 @@ function set_onedark_color -a name rgb index256
     else if string match -qrv '^\d*$' $index256
         echo "set_onedark_color: Cannot use '$index256' at index 3" > /dev/stderr
         return 3
-    else if test $index256 -lt 0 -o $index256 -ge 256
+    else if test $index256 -lt 16 -o $index256 -ge 256
         echo "set_onedark_color: Cannot use '$index256' at index 3" > /dev/stderr
         return 3
     end
