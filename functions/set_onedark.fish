@@ -60,21 +60,7 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
         end
     end
 
-    if string match -qr 'eterm-*' $TERM
-        function __onedark_input_color -a target hex i256 i16
-            set -g $target (printf '#%s' $hex) (__onedark_input_options $target)
-        end
-        function __onedark_output_color
-            true
-        end
-        function __onedark_output_color_var
-            true
-        end
-        function __onedark_output_color_custom
-            true
-        end
-
-    else if test -n "$TMUX"
+    if test -n "$TMUX"
         function __onedark_input_color -a target hex i256 i16
             set -g $target (printf '#%s' $hex) (__onedark_input_options $target)
         end
@@ -125,6 +111,37 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
         end
         function __onedark_output_color -a hex i256 i16
             test $i16 -lt 16; and printf '\e]P%x%s' $i16 $hex
+        end
+        function __onedark_output_color_var
+            true
+        end
+        function __onedark_output_color_custom
+            true
+        end
+
+    else if string match -qr 'eterm-*' $TERM
+        function __onedark_input_color -a target hex i256 i16
+            switch $i16
+                case 0;  set -g $target black     (__onedark_input_options $target)
+                case 1;  set -g $target red       (__onedark_input_options $target)
+                case 2;  set -g $target green     (__onedark_input_options $target)
+                case 3;  set -g $target yellow    (__onedark_input_options $target)
+                case 4;  set -g $target blue      (__onedark_input_options $target)
+                case 5;  set -g $target magenta   (__onedark_input_options $target)
+                case 6;  set -g $target cyan      (__onedark_input_options $target)
+                case 7;  set -g $target white     (__onedark_input_options $target)
+                case 8;  set -g $target brblack   (__onedark_input_options $target)
+                case 9;  set -g $target brred     (__onedark_input_options $target)
+                case 10; set -g $target brgreen   (__onedark_input_options $target)
+                case 11; set -g $target bryellow  (__onedark_input_options $target)
+                case 12; set -g $target brblue    (__onedark_input_options $target)
+                case 13; set -g $target brmagenta (__onedark_input_options $target)
+                case 14; set -g $target brcyan    (__onedark_input_options $target)
+                case 15; set -g $target brwhite   (__onedark_input_options $target)
+            end
+        end
+        function __onedark_output_color
+            true
         end
         function __onedark_output_color_var
             true
