@@ -75,7 +75,8 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
             return
         else if test $i256 -gt 231
             # grayscale
-            printf '%x' (math "8 + 10 * ($i256 - 231)")
+            set -l value (math "8 + 10 * ($i256 - 231)")
+            printf '%02x%02x%02x' $value $value $value
             return
         end
         # detect color level (0 ~ 5)
@@ -87,9 +88,17 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
         set -l blue (math "$i256 - 36 * $red - 6 * $green")
 
         # convert to decimal color code
-        set red   (math "51 * $red")
-        set green (math "51 * $green")
-        set blue  (math "51 * $blue")
+        function __onedark_level_to_decimal -a lv
+            switch $lv
+                case 1 2 3 4 5
+                    math "95 + 40 * ($lv - 1)"
+                case '*'
+                    printf 00
+            end
+        end
+        set red   (__onedark_level_to_decimal $red)
+        set green (__onedark_level_to_decimal $green)
+        set blue  (__onedark_level_to_decimal $blue)
 
         printf "%02x%02x%02x" $red $green $blue
     end
