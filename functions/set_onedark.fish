@@ -97,9 +97,7 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
     function __onedark_input_color -a target hex i256 i16
         set -l template
         switch $target
-            case fish_color_match
-                set template ' --underline=%s'
-            case fish_color_valid_path
+            case fish_color_match fish_color_valid_path
                 # with underline
                 set template '%s --underline'
             case fish_color_selection fish_color_search_match
@@ -194,13 +192,17 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
     __onedark_input_color fish_color_param             $__onedark_brred
     __onedark_input_color fish_color_comment           $__onedark_brblack
     __onedark_input_color fish_color_match             $__onedark_brcyan
-    __onedark_input_color fish_color_search_match      $__onedark_brcyan
+    __onedark_input_color fish_color_search_match      $__onedark_blue
     __onedark_input_color fish_color_operator          $__onedark_brmagenta
-    __onedark_input_color fish_color_escape            $__onedark_white
+    __onedark_input_color fish_color_escape            $__onedark_brcyan
+    __onedark_input_color fish_color_cwd               $__onedark_brred
     __onedark_input_color fish_color_autosuggestion    $__onedark_white
-    __onedark_input_color fish_color_valid_path        $__onedark_white
+    __onedark_input_color fish_color_valid_path        $__onedark_brred
     __onedark_input_color fish_color_history_current   $__onedark_brcyan
     __onedark_input_color fish_color_selection         $__onedark_brblack
+    __onedark_input_color fish_color_user              $__onedark_brblue
+    __onedark_input_color fish_color_host              $__onedark_brgreen
+    __onedark_input_color fish_color_cancel            $__onedark_brblack
     __onedark_input_color fish_pager_color_completion  $__onedark_white
     __onedark_input_color fish_pager_color_prefix      $__onedark_brgreen
     __onedark_input_color fish_pager_color_description $__onedark_white
