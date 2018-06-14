@@ -59,15 +59,6 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
             (string sub -s 5 -l 2 $color)
     end
 
-    function __onedark_input_options
-        switch $argv[1]
-            case 'fish_color_search_match'
-                echo -n '--underline'
-            case 'fish_color_valid_path'
-                echo -n '--underline'
-        end
-    end
-
     function __onedark_256_to_hex -a i256
         if test "$i256" -le 16
             # <16: system color palette, 16: black
@@ -103,14 +94,42 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
         printf "%02x%02x%02x" $red $green $blue
     end
 
-    if test -n "$TMUX"
-        function __onedark_input_color -V use_256 -a target hex i256 i16
-            set -l color
-            test "$use_256" = 'true'
-                and set color (__onedark_256_to_hex $i256)
-                or  set color "$hex"
-            set -g $target (printf '#%s' $color) (__onedark_input_options $target)
+    function __onedark_input_color -a target hex i256 i16
+        set -l template
+        switch $target
+            case fish_color_match
+                set template ' --underline=%s'
+            case fish_color_valid_path
+                # with underline
+                set template '%s --underline'
+            case fish_color_selection fish_color_search_match
+                # change background color
+                set template ' --background=%s'
+            case '*'
+                # change foreground color
+                set template '%s'
         end
+        switch $i16
+            case 0;  set -g $target (string split ' ' (printf "$template" black    ))
+            case 1;  set -g $target (string split ' ' (printf "$template" red      ))
+            case 2;  set -g $target (string split ' ' (printf "$template" green    ))
+            case 3;  set -g $target (string split ' ' (printf "$template" yellow   ))
+            case 4;  set -g $target (string split ' ' (printf "$template" blue     ))
+            case 5;  set -g $target (string split ' ' (printf "$template" magenta  ))
+            case 6;  set -g $target (string split ' ' (printf "$template" cyan     ))
+            case 7;  set -g $target (string split ' ' (printf "$template" white    ))
+            case 8;  set -g $target (string split ' ' (printf "$template" brblack  ))
+            case 9;  set -g $target (string split ' ' (printf "$template" brred    ))
+            case 10; set -g $target (string split ' ' (printf "$template" brgreen  ))
+            case 11; set -g $target (string split ' ' (printf "$template" bryellow ))
+            case 12; set -g $target (string split ' ' (printf "$template" brblue   ))
+            case 13; set -g $target (string split ' ' (printf "$template" brmagenta))
+            case 14; set -g $target (string split ' ' (printf "$template" brcyan   ))
+            case 15; set -g $target (string split ' ' (printf "$template" brwhite  ))
+        end
+    end
+
+    if test -n "$TMUX"
         function __onedark_output_color -V use_256 -a hex i256 i16
             printf '\033Ptmux;\033\033]4%d;rgb:%s\033\033\\\033%s' $i16 (__onedark_code_of $hex $i256) \\
         end
@@ -122,13 +141,6 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
         end
 
     else if string match -qr 'screen[-.]*' $TERM
-        function __onedark_input_color -V use_256 -a target hex i256 i16
-            set -l color
-            test "$use_256" = 'true'
-                and set color (__onedark_256_to_hex $i256)
-                or  set color "$hex"
-            set -g $target (printf '#%s' $color) (__onedark_input_options $target)
-        end
         function __onedark_output_color -V use_256 -a hex i256 i16
             printf '033P\033]4;%d;rgb:%s\007\033%s' $i16 (__onedark_code_of $hex $i256) \\
         end
@@ -140,26 +152,6 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
         end
 
     else if string match -qr 'linux-*' $TERM
-        function __onedark_input_color -a target hex i256 i16
-            switch $i16
-                case 0;  set -g $target black     (__onedark_input_options $target)
-                case 1;  set -g $target red       (__onedark_input_options $target)
-                case 2;  set -g $target green     (__onedark_input_options $target)
-                case 3;  set -g $target yellow    (__onedark_input_options $target)
-                case 4;  set -g $target blue      (__onedark_input_options $target)
-                case 5;  set -g $target magenta   (__onedark_input_options $target)
-                case 6;  set -g $target cyan      (__onedark_input_options $target)
-                case 7;  set -g $target white     (__onedark_input_options $target)
-                case 8;  set -g $target brblack   (__onedark_input_options $target)
-                case 9;  set -g $target brred     (__onedark_input_options $target)
-                case 10; set -g $target brgreen   (__onedark_input_options $target)
-                case 11; set -g $target bryellow  (__onedark_input_options $target)
-                case 12; set -g $target brblue    (__onedark_input_options $target)
-                case 13; set -g $target brmagenta (__onedark_input_options $target)
-                case 14; set -g $target brcyan    (__onedark_input_options $target)
-                case 15; set -g $target brwhite   (__onedark_input_options $target)
-            end
-        end
         function __onedark_output_color -a hex i256 i16
             test $i16 -lt 16; and printf '\e]P%x%s' $i16 $hex
         end
@@ -171,26 +163,6 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
         end
 
     else if string match -qr 'eterm-*' $TERM
-        function __onedark_input_color -a target hex i256 i16
-            switch $i16
-                case 0;  set -g $target black     (__onedark_input_options $target)
-                case 1;  set -g $target red       (__onedark_input_options $target)
-                case 2;  set -g $target green     (__onedark_input_options $target)
-                case 3;  set -g $target yellow    (__onedark_input_options $target)
-                case 4;  set -g $target blue      (__onedark_input_options $target)
-                case 5;  set -g $target magenta   (__onedark_input_options $target)
-                case 6;  set -g $target cyan      (__onedark_input_options $target)
-                case 7;  set -g $target white     (__onedark_input_options $target)
-                case 8;  set -g $target brblack   (__onedark_input_options $target)
-                case 9;  set -g $target brred     (__onedark_input_options $target)
-                case 10; set -g $target brgreen   (__onedark_input_options $target)
-                case 11; set -g $target bryellow  (__onedark_input_options $target)
-                case 12; set -g $target brblue    (__onedark_input_options $target)
-                case 13; set -g $target brmagenta (__onedark_input_options $target)
-                case 14; set -g $target brcyan    (__onedark_input_options $target)
-                case 15; set -g $target brwhite   (__onedark_input_options $target)
-            end
-        end
         function __onedark_output_color
             true
         end
@@ -202,13 +174,6 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
         end
 
     else
-        function __onedark_input_color -V use_256 -a target hex i256 i16
-            set -l color
-            test "$use_256" = 'true'
-                and set color (__onedark_256_to_hex $i256)
-                or  set color "$hex"
-            set -g $target (printf '#%s' $color) (__onedark_input_options $target)
-        end
         function __onedark_output_color -V use_256 -a hex i256 i16
             printf '\033]4;%d;rgb:%s\033%s' $i16 (__onedark_code_of $hex $i256) \\
         end
