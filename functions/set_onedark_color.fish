@@ -50,11 +50,11 @@ function set_onedark_color -a name rgb index256 -d "define color for onedark"
         switch $name
             case black;     set default_color 282c34 235 0
             case red;       set default_color be5046 196 1
-            case green;     set default_color 699959 70  2
+            case green;     set default_color 699959 71  2
             case yellow;    set default_color d19a66 173 3
-            case blue;      set default_color 2e6399 104 4
-            case magenta;   set default_color 733380 127 5
-            case cyan;      set default_color 23878c 31  6
+            case blue;      set default_color 2e6399 25  4
+            case magenta;   set default_color 9918a6 90  5
+            case cyan;      set default_color 23878c 30  6
             case white;     set default_color abb2bf 145 7
             case brblack;   set default_color 5c6370 59  8
             case brred;     set default_color e06c75 204 9
