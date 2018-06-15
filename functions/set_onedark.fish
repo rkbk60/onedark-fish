@@ -30,7 +30,6 @@ function set_onedark -d "apply onedark colorscheme to your terminal"
         end
         set -e argv[1]
     end
-    set -g __onedark_256_flag "$use_256"
 
     set -q __onedark_black;     or set_onedark_color black     default default
     set -q __onedark_red;       or set_onedark_color red       default default
