@@ -4,11 +4,11 @@ It is similar to [fish-vimcolor](https://github.com/ryotako/fish-vimcolor), but 
 
 ## Install
 ```
-fisher rkbk60/onedark-fish
+fisher add rkbk60/onedark-fish
 ```
 
 ## Usage
-Add following lines to `~/.confing/fish/config.fish`:
+Add following lines to `~/.config/fish/config.fish`:
 ```fish
 if status is-interactive
     set -l onedark_options '-b'
